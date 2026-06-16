@@ -4,7 +4,10 @@ import { Filters } from "@/components/filters";
 import { PageHeading } from "@/components/page-heading";
 import { RankingTable } from "@/components/ranking-table";
 import { StatsCard } from "@/components/stats-card";
-import { calculateStandings } from "@/domain/scoring";
+import {
+  calculateStandings,
+  getParticipantRankingBreakdown,
+} from "@/domain/scoring";
 import { getTournamentData } from "@/lib/data";
 
 interface HomeProps {
@@ -26,6 +29,16 @@ export default async function Home({ searchParams }: HomeProps) {
     data.participants,
     filteredMatches,
     filteredPredictions,
+  );
+  const breakdowns = Object.fromEntries(
+    standings.map((standing) => [
+      standing.participant.id,
+      getParticipantRankingBreakdown(
+        standing.participant.id,
+        filteredMatches,
+        filteredPredictions,
+      ),
+    ]),
   );
   const leader = standings[0];
   const completedMatches = filteredMatches.filter(
@@ -96,7 +109,7 @@ export default async function Home({ searchParams }: HomeProps) {
           },
         ]}
       />
-      <RankingTable standings={standings} />
+      <RankingTable standings={standings} breakdowns={breakdowns} />
     </>
   );
 }

@@ -4,6 +4,7 @@ import {
   calculateGroupStats,
   calculatePredictionPoints,
   calculateStandings,
+  getParticipantRankingBreakdown,
   getParticipantsWhoHitMatch,
 } from "@/domain/scoring";
 
@@ -44,5 +45,26 @@ describe("reglas de puntuación", () => {
         mockPredictions,
       ).length,
     ).toBeGreaterThan(0);
+  });
+
+  it("devuelve últimos y próximos partidos para el desglose del ranking", () => {
+    const breakdown = getParticipantRankingBreakdown(
+      "P01",
+      mockMatches,
+      mockPredictions,
+    );
+
+    expect(breakdown.recentMatches).toHaveLength(3);
+    expect(breakdown.upcomingMatches).toHaveLength(3);
+    expect(
+      breakdown.recentMatches.every(
+        ({ match }) => match.status === "Finalizado",
+      ),
+    ).toBe(true);
+    expect(
+      breakdown.upcomingMatches.every(
+        ({ match }) => match.status === "Pendiente",
+      ),
+    ).toBe(true);
   });
 });

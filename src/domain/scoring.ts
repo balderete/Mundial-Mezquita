@@ -5,8 +5,10 @@ import type {
   ParticipantStats,
   Prediction,
   PredictionDetail,
+  ParticipantRankingBreakdown,
   Standing,
 } from "@/types";
+import { getTournamentDateTime } from "@/lib/dates";
 
 export function calculatePredictionPoints(
   match: Match,
@@ -35,7 +37,7 @@ export function getParticipantPredictionDetails(
   );
 
   return [...matches]
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort((a, b) => getTournamentDateTime(a.date) - getTournamentDateTime(b.date))
     .map((match) => {
       const prediction = predictionsByMatch.get(match.id) ?? null;
       const points = calculatePredictionPoints(match, prediction);
@@ -46,6 +48,45 @@ export function getParticipantPredictionDetails(
         isCorrect: points === 1,
       };
     });
+}
+
+export function getParticipantRankingBreakdown(
+  participantId: string,
+  matches: Match[],
+  predictions: Prediction[],
+): ParticipantRankingBreakdown {
+  const details = getParticipantPredictionDetails(
+    participantId,
+    matches,
+    predictions,
+  );
+
+  return {
+    recentMatches: details
+      .filter(({ match, prediction }) => {
+        return (
+          match.status === "Finalizado" &&
+          Boolean(match.actualResult) &&
+          prediction
+        );
+      })
+      .sort(
+        (a, b) =>
+          getTournamentDateTime(b.match.date) -
+          getTournamentDateTime(a.match.date),
+      )
+      .slice(0, 3),
+    upcomingMatches: details
+      .filter(({ match, prediction }) => {
+        return match.status !== "Finalizado" && prediction;
+      })
+      .sort(
+        (a, b) =>
+          getTournamentDateTime(a.match.date) -
+          getTournamentDateTime(b.match.date),
+      )
+      .slice(0, 3),
+  };
 }
 
 export function calculateParticipantStats(

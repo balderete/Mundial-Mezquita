@@ -1,4 +1,5 @@
 import { CalendarDays, Check, Clock3, Users } from "lucide-react";
+import { formatTournamentDate } from "@/lib/dates";
 import type { Match, Participant, Prediction } from "@/types";
 
 const resultLabels = {
@@ -6,17 +7,6 @@ const resultLabels = {
   E: "Empate",
   V: "Ganó visitante",
 };
-
-function formatDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
 
 interface MatchCardProps {
   match: Match;
@@ -53,7 +43,7 @@ export function MatchCard({
       <div className="p-5">
         <div className="mb-5 flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">
           <CalendarDays size={15} aria-hidden="true" />
-          <time dateTime={match.date}>{formatDate(match.date)}</time>
+          <time dateTime={match.date}>{formatTournamentDate(match.date)}</time>
         </div>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <p className="text-right text-base font-black">{match.homeTeam}</p>

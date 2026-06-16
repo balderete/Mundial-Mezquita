@@ -8,6 +8,7 @@ import { StatsCard } from "@/components/stats-card";
 import {
   calculateParticipantStats,
   getParticipantPredictionDetails,
+  getParticipantsWhoHitMatch,
 } from "@/domain/scoring";
 import { getTournamentData } from "@/lib/data";
 
@@ -128,6 +129,11 @@ export default async function ParticipantPage({
           <MatchCard
             key={match.id}
             match={match}
+            winners={getParticipantsWhoHitMatch(
+              match,
+              data.participants,
+              data.predictions,
+            )}
             selectedPrediction={prediction}
           />
         ))}

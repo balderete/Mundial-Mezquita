@@ -59,6 +59,11 @@ export interface PredictionDetail {
   isCorrect: boolean;
 }
 
+export interface ParticipantRankingBreakdown {
+  recentMatches: PredictionDetail[];
+  upcomingMatches: PredictionDetail[];
+}
+
 export interface TournamentData {
   participants: Participant[];
   matches: Match[];
